@@ -1,0 +1,34 @@
+{
+  "name": "generator-platanus-ionic",
+  "version": "0.0.0",
+  "description": "Yeoman generator",
+  "license": "MIT",
+  "main": "app/index.js",
+  "repository": "platanus/generator-platanus-ionic",
+  "author": {
+    "name": "René A. Morales",
+    "email": "rene.morales.sanchez@gmail.com",
+    "url": "https://github.com/ReneMoraales"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "files": [
+    "app"
+  ],
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "dependencies": {
+    "ionic": "*",
+    "yeoman-generator": "^0.18.9",
+    "chalk": "^1.0.0",
+    "yosay": "^1.0.2"
+  },
+  "devDependencies": {
+    "mocha": "*"
+  }
+}
