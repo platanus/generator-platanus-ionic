@@ -1,14 +1,20 @@
 'use strict';
-var fs = require('fs')
+var fs = require('fs-extra')
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var yosay = require('yosay');
-var child_process = require('child_process');
-var exec = child_process.execSync;
+var Download = require('download');
+var shelljs = require('shelljs/global');
 
 var ionic = function(args) {
-  return child_process.execFileSync('ionic', args.split(' '));
+  return exec('ionic ' + args);
 };
+
+var cordovaPlugins = [
+  "org.apache.cordova.device",
+  "org.apache.cordova.console",
+  "com.ionic.keyboard"
+];
 
 module.exports = yeoman.generators.Base.extend({
   initializing: function () {
@@ -48,7 +54,13 @@ module.exports = yeoman.generators.Base.extend({
     }, {
       type: 'input',
       name: 'proxyApiUrl',
-      message: 'Please enter the base API url that will be proxified through /api '+chalk.yellow('(e.g. http://myapp.pow/api, empty if not used)')
+      message: 'Please enter the base API url that will be proxified through /api',
+      default: 'http://myapp.pow/api'
+    }, {
+      type: 'input',
+      name: 'templateRepo',
+      message: 'What is the Github repository you want to use as the template for this project?',
+      default: 'platanus/ionic-starter-template'
     }];
 
     this.prompt(prompts, function (answers) {
@@ -58,15 +70,15 @@ module.exports = yeoman.generators.Base.extend({
   },
 
   writing: {
-    ionicSetup: function() {
-      console.log('Initializing Ionic app...');
-      ionic('start '+this.options.appName+' tabs');
-      exec('cp -rf ' + this.options.appName + '/. .');
-      exec('rm -rf ' + this.options.appName);
+    fetchAppBase: function() {
+      var done = this.async();
+      console.log('Downloading Ionic base app...');
+      downloadGithubRepo('platanus/ionic-app-base', '.', done);
     },
-    ionicSetupSass: function() {
-      console.log('Setting up SCSS support...');
-      ionic('setup sass');
+    fetchIonicTemplate: function() {
+      var done = this.async();
+      console.log('Downloading Platanus Ionic template...');
+      downloadGithubRepo(this.options.templateRepo, 'app', done);
     },
     ionicSetupProxy: function() {
       if ( this.options.proxyApiUrl && this.options.proxyApiUrl.length > 0 ) {
@@ -79,7 +91,18 @@ module.exports = yeoman.generators.Base.extend({
         fs.writeFileSync('ionic.project', JSON.stringify(ionicProject, null, 2));
       }
     },
-    ionicSetupPlatforms: function() {
+    mkdirWww: function() {
+      console.log('Creating \'www\' directory...');
+      fs.mkdirsSync('www');
+    }
+  },
+
+  install: function(){
+    this.installDependencies();
+  },
+
+  end: {
+    ionicAddPlatforms: function() {
       if ( this.options.platforms.indexOf('ios') > -1 ) {
         console.log('Adding iOS platform...');
         ionic('platform add ios');
@@ -95,24 +118,31 @@ module.exports = yeoman.generators.Base.extend({
         ionic('browser add crosswalk');
       }
     },
-    projectFiles: function() {
-      this.fs.copy(
-        this.templatePath('gitignore'),
-        this.destinationPath('.gitignore')
-      );
-      this.fs.copy(
-        this.templatePath('karma.conf.js'),
-        this.destinationPath('karma.conf.js')
-      );
+    cordovaAddPlugins: function() {
+      console.log('Installing Cordova plugins...');
+      cordovaPlugins.forEach(function(plugin){
+        exec('cordova plugin add ' + plugin);
+      });
     }
-  },
-
-  install: function () {
-    console.log('Setting up dependencies...');
-
-    this.bowerInstall(['angular-mocks', 'angular-restmod', 'ngCordova'], { 'saveDev': true });
-    this.npmInstall(['karma', 'karma-jasmine', 'karma-phantomjs-launcher'], { 'saveDev': true });
-
-    this.installDependencies();
   }
 });
+
+
+function downloadGithubRepo(repository, dest, cb) {
+  var tempFolder = 'tmp' + Date.now();
+  var repoFolder = repository.split('/')[1] + '-master';
+  var repoUrl = getGithubRepoZip(repository);
+  var download = new Download({extract: true})
+    .get(repoUrl)
+    .dest(tempFolder);
+  download.run(function(err){
+    if ( err ) throw err;
+    fs.copySync(tempFolder + '/' + repoFolder + '/.', dest);
+    fs.removeSync(tempFolder);
+    cb();
+  });
+};
+
+function getGithubRepoZip(repository){
+  return 'https://github.com/' + repository + '/archive/master.zip';
+}
