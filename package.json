@@ -1,20 +1,17 @@
 {
   "name": "generator-platanus-ionic",
-  "version": "0.0.0",
-  "description": "Yeoman generator",
+  "version": "0.0.1",
+  "description": "A Yeoman generator for Ionic projects using Platanus conventions.",
   "license": "MIT",
   "main": "app/index.js",
   "repository": "platanus/generator-platanus-ionic",
   "author": {
     "name": "René A. Morales",
-    "email": "rene.morales.sanchez@gmail.com",
-    "url": "https://github.com/ReneMoraales"
+    "email": "rene@platan.us",
+    "url": "http://platan.us"
   },
   "engines": {
     "node": ">=0.10.0"
-  },
-  "scripts": {
-    "test": "mocha"
   },
   "files": [
     "app"
@@ -29,8 +26,5 @@
     "shelljs": "^0.4.0",
     "yeoman-generator": "^0.18.9",
     "yosay": "^1.0.2"
-  },
-  "devDependencies": {
-    "mocha": "*"
   }
 }
