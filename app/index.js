@@ -35,6 +35,11 @@ module.exports = yeoman.generators.Base.extend({
       message: 'What is the name of this new app?',
       default: 'platanus-ionic-starter'
     }, {
+      type: 'input',
+      name: 'appId',
+      message: 'What is the package ID for this app?',
+      default: 'us.platan.starter'
+    }, {
       type: 'checkbox',
       name: 'platforms',
       message: 'What platforms do you need to support?',
@@ -99,6 +104,22 @@ module.exports = yeoman.generators.Base.extend({
     mkdirWww: function() {
       console.log('Creating \'www\' directory...');
       fs.mkdirsSync('www');
+    },
+    addProjectName: function() {
+      console.log('Setting up app name on project files...');
+      var appName = this.options.appName;
+      var replace_files = ['package.json', 'bower.json', 'config.xml', 'npm-shrinkwrap.json', 'ionic.project'];
+      replace_files.forEach(function(file){
+        var contents = fs.readFileSync(file, 'utf8');
+        contents = contents.replace('platanus-ionic-starter', appName);
+        fs.writeFileSync(file, contents);
+      });
+    },
+    addProjectId: function() {
+      console.log('Writing app ID on config.xml...');
+      var contents = fs.readFileSync('config.xml', 'utf8');
+      contents = contents.replace('us.platan.starter', this.options.appId);
+      fs.writeFileSync('config.xml', contents);
     }
   },
 
