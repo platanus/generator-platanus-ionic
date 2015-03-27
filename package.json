@@ -1,6 +1,6 @@
 {
   "name": "generator-platanus-ionic",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A Yeoman generator for Ionic projects using Platanus conventions.",
   "license": "MIT",
   "main": "app/index.js",
