@@ -58,9 +58,14 @@ module.exports = yeoman.generators.Base.extend({
       default: 'http://myapp.pow/api'
     }, {
       type: 'input',
+      name: 'baseRepo',
+      message: 'What is the Github repository you want to use as the app base?',
+      default: 'platanus/ionic-app-base#master'
+    }, {
+      type: 'input',
       name: 'templateRepo',
       message: 'What is the Github repository you want to use as the template for this project?',
-      default: 'platanus/ionic-starter-template'
+      default: 'platanus/ionic-starter-template#master'
     }];
 
     this.prompt(prompts, function (answers) {
@@ -73,7 +78,7 @@ module.exports = yeoman.generators.Base.extend({
     fetchAppBase: function() {
       var done = this.async();
       console.log('Downloading Ionic base app...');
-      downloadGithubRepo('platanus/ionic-app-base', '.', done);
+      downloadGithubRepo(this.options.baseRepo, '.', done);
     },
     fetchIonicTemplate: function() {
       var done = this.async();
@@ -123,15 +128,28 @@ module.exports = yeoman.generators.Base.extend({
       cordovaPlugins.forEach(function(plugin){
         exec('cordova plugin add ' + plugin);
       });
+    },
+    greet: function() {
+      console.log('\n------------');
+      console.log('* All done! Run '+chalk.yellow('ionic serve')+' to start up a web server.');
+      console.log('* Please refer to your app base\'s documentation for more information');
+      console.log('  about the project\'s folder structure and workflow.');
+      console.log(chalk.yellow('* Thank you from Platanus!'));
+      console.log('-------------\n');
     }
   }
 });
 
 
 function downloadGithubRepo(repository, dest, cb) {
+  var split = repository.split('#');
+  repository = split[0];
+  var branch = 'master';
+  if ( split.length == 2 ) branch = split[1];
+
   var tempFolder = 'tmp' + Date.now();
-  var repoFolder = repository.split('/')[1] + '-master';
-  var repoUrl = getGithubRepoZip(repository);
+  var repoFolder = repository.split('/')[1] + '-'+branch;
+  var repoUrl = getGithubRepoZip(repository, branch);
   var download = new Download({extract: true})
     .get(repoUrl)
     .dest(tempFolder);
@@ -143,6 +161,7 @@ function downloadGithubRepo(repository, dest, cb) {
   });
 };
 
-function getGithubRepoZip(repository){
-  return 'https://github.com/' + repository + '/archive/master.zip';
+function getGithubRepoZip(repository, branch){
+  console.log('Downloading https://github.com/' + repository + '/archive/'+branch+'.zip');
+  return 'https://github.com/' + repository + '/archive/'+branch+'.zip';
 }
