@@ -171,7 +171,7 @@ function downloadGithubRepo(repository, dest, cb) {
   var tempFolder = 'tmp' + Date.now();
   var repoFolder = repository.split('/')[1] + '-'+branch;
   var repoUrl = getGithubRepoZip(repository, branch);
-  var download = new Download({extract: true})
+  var download = new Download({mode: '755', extract: true})
     .get(repoUrl)
     .dest(tempFolder);
   download.run(function(err){
