@@ -10,9 +10,14 @@ var ionic = function(args) {
   return exec('ionic ' + args);
 };
 
+var cordova = function(args) {
+  return exec('cordova ' + args);
+};
+
 var cordovaPlugins = [
-  "org.apache.cordova.device",
-  "org.apache.cordova.console",
+  "cordova-plugin-device",
+  "cordova-plugin-console",
+  "cordova-plugin-whitelist", // will be required for CSP
   "com.ionic.keyboard"
 ];
 
@@ -129,25 +134,22 @@ module.exports = yeoman.generators.Base.extend({
 
   end: {
     ionicAddPlatforms: function() {
-      if ( this.options.platforms.indexOf('ios') > -1 ) {
-        console.log('Adding iOS platform...');
-        ionic('platform add ios');
-      }
-      if ( this.options.platforms.indexOf('android') > -1 ) {
-        console.log('Adding Android platform...');
-        ionic('platform add android');
-      }
+      this.options.platforms.forEach(function(platform){
+        console.log('Adding `' + platform + '` platform...');
+        ionic('platform add ' + platform + ' --save');
+      });
     },
     ionicSetupCrosswalk: function() {
       if ( this.options.useCrosswalk ) {
         console.log('Adding Crosswalk support...');
-        ionic('browser add crosswalk');
+        // Just push Crosswalk into list of plugins to install :)
+        cordovaPlugins.push('cordova-plugin-crosswalk-webview');
       }
     },
     cordovaAddPlugins: function() {
       console.log('Installing Cordova plugins...');
       cordovaPlugins.forEach(function(plugin){
-        exec('cordova plugin add ' + plugin);
+        cordova('plugin add ' + plugin + ' --save');
       });
     },
     greet: function() {
