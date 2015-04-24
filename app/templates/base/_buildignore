@@ -1,0 +1,7 @@
+# These files will be left out of the /www folder on the build process.
+# Specified paths are relative to the /app folder.
+# For example, leave Ionic's SASS files out of the build folder with:
+
+lib/ionic/scss/
+
+scss/
