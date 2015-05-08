@@ -1,7 +1,26 @@
-Platanus Ionic App Base
+Platanus Ionic App
 =====================
 
-An Ionic base repository for use with the Platanus Ionic Generator.
+This app was created with the Platanus Ionic Generator! Below you will find instructions on how to develop with our guidelines.
+
+## Getting started
+
+If you cloned this app, as opposed to generating it, you need to:
+
+- Run ```npm install``` and then ```bower install```.
+- Run ```mkdir www``` or ```gulp build``` to generate the missing ```www``` folder, otherwise you might get a *Not a Cordova project* error.
+- Run ```cordova prepare``` in order to add the platforms and plugins defined in the app's config.xml, as per Cordova 5.0.
+
+## Common tasks
+
+The Platanus Ionic workflow tries to adhere as much as possible to the Cordova & Ionic way of doing things, so to do common tasks such as to serve, emulate or build your app, or adding platforms and plugins, use the Ionic and Cordova CLI commands you would regularly use. Some tasks are:
+
+- ```ionic serve``` to serve the app to your browser
+- ```ionic emulate ios``` to launch your app in the iOS emulator
+- ```ionic build android --env=staging``` to build an APK using the 'staging' environment
+- ```cordova plugin add cordova-plugin-device --save``` to add the Device Cordova plugin to the app and persist it on the config.xml
+
+**Note on platforms and plugins:** When adding/removing platforms or plugins using the ```cordova``` tool, please suffix your commands with the ```--save``` flag, so the changes are persisted on the app's ```config.xml``` for fellow developers to use.
 
 ## Files
 
