@@ -10,7 +10,7 @@ Get up and running with Ionic, Crosswalk, Restmod, ngCordova, Karma and more.
 
 ## What does it do?
 
-- Creates a new Ionic project based on our [Base App](https://github.com/platanus/ionic-app-base), and our [Starter Template](https://github.com/platanus/ionic-starter-template).
+- Creates a new Ionic project based on our guidelines and a specified template.
 - Sets up SCSS support.
 - Adds specified platforms and Crosswalk if necessary.
 - Sets up an API proxy.
@@ -18,7 +18,7 @@ Get up and running with Ionic, Crosswalk, Restmod, ngCordova, Karma and more.
 
 ## After generating
 
-Use `ionic serve` to start a web server. To learn more about how to use the generated app, take a look at our [Base App's README](https://github.com/platanus/ionic-app-base). Happy development!
+Use `ionic serve` to start a web server. To learn more about the Platanus Ionic workflow, take a look at the README file of your generated app. Happy development!
 
 ## Credits
 
