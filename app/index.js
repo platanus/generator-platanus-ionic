@@ -104,9 +104,17 @@ module.exports = yeoman.generators.Base.extend({
         this.destinationPath('.')
       );
     },
-    replaceUnderscores: function() {
+    fetchIonicTemplate: function() {
+      var done = this.async();
+      outputCyan('[2/7]', 'Downloading Platanus Ionic app template...');
+
+      downloadGithubRepo(this.options.templateRepo, 'app', done);
+    },
+    moveTemplateRootFiles: function() {
       var filesToRename = ['bowerrc', 'buildignore', 'gitignore', 'node-version'];
-      outputCyan('[2/7]', 'Fixing some filenames...');
+      var filesToMove = ['bower.json', 'karma.conf.js'];
+
+      outputCyan('[3/7]', 'Moving and renaming some files...');
 
       filesToRename.forEach(function(file){
         var dotfile = '.' + file;
@@ -115,12 +123,12 @@ module.exports = yeoman.generators.Base.extend({
         fs.writeFileSync(dotfile, contents);
         fs.removeSync(underfile);
       });
-    },
-    fetchIonicTemplate: function() {
-      var done = this.async();
-      outputCyan('[3/7]', 'Downloading Platanus Ionic app template...');
 
-      downloadGithubRepo(this.options.templateRepo, 'app', done);
+      filesToMove.forEach(function(file){
+        var contents = fs.readFileSync('app/' + file, 'utf8');
+        fs.writeFileSync(file, contents);
+        fs.removeSync('app/' + file);
+      });
     },
     ionicSetupProxy: function() {
       if ( this.options.proxyApiUrl && this.options.proxyApiUrl.length > 0 ) {
