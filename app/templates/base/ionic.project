@@ -1,0 +1,15 @@
+{
+  "name": "platanus-ionic-starter",
+  "app_id": "",
+  "documentRoot": "app",
+  "gulpStartupTasks": [
+    "env",
+    "sass",
+    "watch"
+  ],
+  "watchPatterns": [
+    "app/**/*",
+    "!app/scss/**/*",
+    "!app/lib/**/*"
+  ]
+}
