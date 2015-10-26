@@ -5,6 +5,8 @@ var chalk = require('chalk');
 var yosay = require('yosay');
 var Download = require('download');
 var shelljs = require('shelljs/global');
+var http = require('http');
+var semver =  require('semver');
 
 var ionic = function(args) {
   return exec('ionic ' + args);
@@ -97,7 +99,7 @@ module.exports = yeoman.generators.Base.extend({
   writing: {
     setupAppBase: function() {
       console.log('\n' + chalk.bgCyan.black(' Writing files ') + '\n');
-      outputCyan('[1/7]', 'Copying App Base files...');
+      outputCyan('[1/8]', 'Copying App Base files...');
 
       fs.copySync(
         this.templatePath('base/.'),
@@ -106,7 +108,7 @@ module.exports = yeoman.generators.Base.extend({
     },
     fetchIonicTemplate: function() {
       var done = this.async();
-      outputCyan('[2/7]', 'Downloading Platanus Ionic app template...');
+      outputCyan('[2/8]', 'Downloading Platanus Ionic app template...');
 
       downloadGithubRepo(this.options.templateRepo, 'app', done);
     },
@@ -114,7 +116,7 @@ module.exports = yeoman.generators.Base.extend({
       var filesToRename = ['bowerrc', 'buildignore', 'gitignore', 'node-version'];
       var filesToMove = ['bower.json', 'karma.conf.js'];
 
-      outputCyan('[3/7]', 'Moving and renaming some files...');
+      outputCyan('[3/8]', 'Moving and renaming some files...');
 
       filesToRename.forEach(function(file){
         var dotfile = '.' + file;
@@ -132,7 +134,7 @@ module.exports = yeoman.generators.Base.extend({
     },
     ionicSetupProxy: function() {
       if ( this.options.proxyApiUrl && this.options.proxyApiUrl.length > 0 ) {
-        outputCyan('[4/7]', 'Setting up API proxy...');
+        outputCyan('[4/8]', 'Setting up API proxy...');
 
         var ionicProjectFile = fs.readFileSync('ionic.project');
         var ionicProject = JSON.parse(ionicProjectFile);
@@ -143,12 +145,12 @@ module.exports = yeoman.generators.Base.extend({
       }
     },
     mkdirWww: function() {
-      outputCyan('[5/7]', 'Creating \'www\' directory...');
+      outputCyan('[5/8]', 'Creating \'www\' directory...');
 
       fs.mkdirsSync('www');
     },
     addProjectName: function() {
-      outputCyan('[6/7]', 'Setting up app name on project files...');
+      outputCyan('[6/8]', 'Setting up app name on project files...');
 
       var appName = this.options.appName;
       var replace_files = ['package.json', 'bower.json', 'config.xml', 'npm-shrinkwrap.json', 'ionic.project'];
@@ -164,11 +166,44 @@ module.exports = yeoman.generators.Base.extend({
       fs.writeFileSync('config.xml', contents);
     },
     addProjectId: function() {
-      outputCyan('[7/7]', 'Writing app ID on config.xml...');
+      outputCyan('[7/8]', 'Writing app ID on config.xml...');
 
       var contents = fs.readFileSync('config.xml', 'utf8');
       contents = contents.replace('us.platan.starter', this.options.appId);
       fs.writeFileSync('config.xml', contents);
+    },
+    addNodeVersion: function() {
+      outputCyan('[8/8]', 'Writing node version on .node-version...');
+
+      function writeNodeVersionFile(version){
+        var contents = fs.readFileSync('.node-version', 'utf8');
+        contents = contents.replace('<%= version_alias %>', version);
+        fs.writeFileSync('.node-version', getAlias(contents));
+      }
+
+      function getAlias(version){
+        return semver.major(version) + "." + semver.minor(version);
+      }
+
+      http.get('http://node.platasn.us/latest', function(response) {
+
+        // Continuously update stream with data
+        var body = '';
+        response.on('data', function(d) {
+            body += d;
+        });
+        response.on('end', function() {
+          if(response.statusCode === 200){
+            writeNodeVersionFile(body);
+          }
+          else {
+            writeNodeVersionFile(process.version);
+          }
+        })
+      })
+      .on('error', function(e) {
+        writeNodeVersionFile(process.version)
+      });
     },
     warnTakeover: function() {
       var done = this.async();
